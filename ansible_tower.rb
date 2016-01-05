@@ -3,6 +3,28 @@ require 'json'
 require 'byebug'
 
 module AnsibleTower
+  @@page_size = 50
+  @@page = 1
+
+  def next
+    return "No Response".to_json if self.response.nil?
+    next_url = "#{proto}#{host}#{self.response['next']}"
+    get(next_url)
+  end
+
+  def previous
+    return "No Response".to_json if self.response.nil?
+    prev_url = "#{proto}#{host}#{self.response['previous']}"
+    get(prev_url)
+  end
+
+  def page
+    @@page
+  end
+
+  def page_size
+    @@page_size
+  end
 
   def host=(x)
    @@host = x
@@ -90,6 +112,7 @@ module AnsibleTower
     attr_reader :token, :expires, :response
 
     def initialize(*args, &block)
+      @debug = true if args.first
       creds(Auth.token(*args, &block))
     end
 
@@ -98,8 +121,8 @@ module AnsibleTower
       @expires = auth["expires"]
     end
 
-    def get
-      @conn = Curl::Easy.http_get(url) do |curl|
+    def get(get_url = url)
+      @conn = Curl::Easy.http_get(get_url) do |curl|
          headers.each {|k,v| curl.headers[k] = v }
          curl.ssl_verify_peer = false
          curl.resolve_mode = :ipv4
@@ -110,7 +133,7 @@ module AnsibleTower
       @response
     end
 
-    def put
+    def put(post_data)
       @conn = Curl::Easy.http_post(url, post_data) do |curl|
          headers.each {|k,v| curl.headers[k] = v }
          curl.ssl_verify_peer = false
@@ -125,6 +148,7 @@ module AnsibleTower
     def url
       "#{proto}#{host}/api/v1/unified_jobs/"
     end
+
 
     def headers
       {}.tap do |header|
