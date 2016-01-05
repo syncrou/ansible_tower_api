@@ -8,12 +8,14 @@ module AnsibleTower
 
   def next
     return "No Response".to_json if self.response.nil?
+    return "No Previous Records".to_json if self.response['next'].nil?
     next_url = "#{proto}#{host}#{self.response['next']}"
     get(next_url)
   end
 
   def previous
     return "No Response".to_json if self.response.nil?
+    return "No Previous Records".to_json if self.response['previous'].nil?
     prev_url = "#{proto}#{host}#{self.response['previous']}"
     get(prev_url)
   end
@@ -106,14 +108,12 @@ module AnsibleTower
 
   end
 
-  class UnifiedJob < Auth
+  class Base < Auth
     include AnsibleTower
 
     attr_reader :token, :expires, :response
 
     def initialize(*args, &block)
-      @debug = true if args.first
-      creds(Auth.token(*args, &block))
     end
 
     def creds(auth)
@@ -146,15 +146,43 @@ module AnsibleTower
     end
 
     def url
-      "#{proto}#{host}/api/v1/unified_jobs/"
     end
-
 
     def headers
       {}.tap do |header|
         header['Content-Type'] = 'application/json'
         header['Authorization'] = "Token #{@token}"
       end
+    end
+  end
+
+  class UnifiedJob < Base
+    include AnsibleTower
+
+    attr_reader :token, :expires, :response
+
+    def initialize(*args, &block)
+      @debug = true if args.first
+      creds(Auth.token(*args, &block))
+    end
+
+    def url
+      "#{proto}#{host}/api/v1/unified_jobs/"
+    end
+  end
+
+  class Ping < Base
+    include AnsibleTower
+
+    attr_reader :token, :expires, :response
+
+    def initialize(*args, &block)
+      @debug = true if args.first
+      creds(Auth.token(*args, &block))
+    end
+
+    def url
+      "#{proto}#{host}/api/v1/ping/"
     end
   end
 end
