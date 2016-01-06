@@ -185,6 +185,10 @@ module AnsibleTower
       creds(Auth.token(*args, &block))
     end
 
+    def put(*args)
+      return "Not Implemented for #{self.class.name}".to_json
+    end
+
     def url
       "#{proto}#{host}/api/v1/ping/"
     end
