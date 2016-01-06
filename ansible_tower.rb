@@ -189,4 +189,39 @@ module AnsibleTower
       "#{proto}#{host}/api/v1/ping/"
     end
   end
+
+  class Inventory < Base
+    include AnsibleTower
+
+    attr_reader :token, :expires, :response
+
+    def initialize(*args, &block)
+      @debug = true if args.first
+      creds(Auth.token(*args, &block))
+    end
+
+    def url
+      "#{proto}#{host}/api/v1/inventories/"
+    end
+  end
+
+  class JobTemplate < Base
+    include AnsibleTower
+
+    attr_reader :token, :expires, :response
+
+    def initialize(*args, &block)
+      @debug = true if args.first
+      creds(Auth.token(*args, &block))
+    end
+
+    def launch(id)
+      launch_url = "#{url}/#{id}/launch/"
+      put(launch_url, {})
+    end
+
+    def url
+      "#{proto}#{host}/api/v1/job_templates/"
+    end
+  end
 end
