@@ -20,6 +20,10 @@ module AnsibleTower
     get(prev_url)
   end
 
+  def results
+    get(url)['results']
+  end
+
   def page
     @@page
   end
