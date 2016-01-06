@@ -216,7 +216,7 @@ module AnsibleTower
     end
 
     def launch(id)
-      launch_url = "#{url}/#{id}/launch/"
+      launch_url = "#{url}#{id}/launch/"
       put(launch_url, {})
     end
 
