@@ -137,8 +137,8 @@ module AnsibleTower
       @response
     end
 
-    def put(post_data)
-      @conn = Curl::Easy.http_post(url, post_data) do |curl|
+    def put(put_url = url, post_data)
+      @conn = Curl::Easy.http_post(put_url, post_data) do |curl|
          headers.each {|k,v| curl.headers[k] = v }
          curl.ssl_verify_peer = false
          curl.resolve_mode = :ipv4
